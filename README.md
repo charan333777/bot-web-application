@@ -25,10 +25,8 @@ MyMvcApp
 │   └── js
 │       └── site.js
 ├── appsettings.json
-
- |—- bot.sln
-
- |—- botapp.csproj
+|—- bot.sln
+|—- botapp.csproj
 ├── Program.cs
 ├── Startup.cs
 └── [README.md](http://readme.md/)
@@ -182,29 +180,15 @@ variables:
 steps:
 - task: NuGetToolInstaller@1       ## this task install the dependence of .net application
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
 
 - task: VSBuild@1                  ## this task built's artifact by using botapp.csproj file
-  inputs:
-    solution: '$(solution)'
   
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-
-    platform: '$(buildPlatform)'
-
-    configuration: '$(buildConfiguration)'
 
 - task: VSTest@2                 ## this will tast the application but in this case it won't do anything 
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+
+ 
 - task: PublishBuildArtifacts@1   ## this task will publish artifact to publish location which is defaultrepository for storing artifacts
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+
 
 Step 4 : Creating hosting environment based on our requirement (in our case Azure app services)
 
@@ -241,20 +225,9 @@ pool:
  
 steps:
 - task: DownloadPipelineArtifact@2  # downlaods artifacts from CI publish location and it will download only latest one
-  inputs:
-    buildType: 'specific'
-    project: '360898f6-7e9b-4184-b74d-fee9965d0e21'
-    definition: '6'
-    buildVersionToDownload: 'latest'
-    allowPartiallySucceededBuilds: true
-    targetPath: '$(Pipeline.Workspace)'
+ 
 - task: AzureRmWebAppDeployment@5   # this task will publish it to derived invironment in our case azure app service
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Subcriptiontoken code or Service connection key'
-    appType: 'webApp'
-    WebAppName: 'bot-webpage'
-    packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+ 
 
 finally after deploying you can see your web page live 
 
