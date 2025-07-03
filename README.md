@@ -82,7 +82,7 @@ Steps:
 
 Step1 : Create a project name bot in Azure devOps
 
-pic-1
+![repo-look-img](z-images/image-1.png)
 
 Step2 :  After creating it we need to push our local repo to azure repo’s
 
@@ -107,7 +107,7 @@ after this your local repo would be push to remote repo and connection between l
 
 it should look like this
 
-pic-2
+![repo-look-img](z-images/image-2.png)
 
 Step3 : Creating CI pipe line
 
@@ -117,20 +117,20 @@ Step3 : Creating CI pipe line
 
 follow this steps
 
-pic-3
+![repo-look-img](z-images/image-3.png)
 
 here click on azure repo Git because our code present it that repo
 
-pic-4
+![repo-look-img](z-images/image-4.png)
 
 Select repository for our case we have bot repo when our project files are stored then select it
 
-pic-5
+![repo-look-img](z-images/image-5.png)
 
 Here you can select select any option from top three or if you are using my repo you can use last option then you can select it from repo 
 here I am selecting first option
 
-pic-6
+![repo-look-img](z-images/image-6.png)
 
 now you can see yaml file which is created automatically 
 
@@ -144,23 +144,23 @@ then it run it
 
 task adding process
 
-pic-7
+![repo-look-img](z-images/image-7.png)
 
-pic-8
+![repo-look-img](z-images/image-8.png)
 
 this would be out-put
 
-pic-8
+![repo-look-img](z-images/image-9.png)
 
 then run it 
 
 after running successfully you can see artifact(file) present in publishes section that is the built artifact
 
-pic-9
+![repo-look-img](z-images/image-10.png)
 
 these are the files present in it 
 
-pic-10
+![repo-look-img](z-images/image-11.png)
 
 now I would like to explain in short YMAL file of CI. then we move on to creating hosting server
 
@@ -195,13 +195,13 @@ Step 4 : Creating hosting environment based on our requirement (in our case Azur
 For that Goto
 Azure cloud  > search for app service > click on Create (then you can see this page)
 
-pic-11
+![repo-look-img](z-images/image-12.png)
 
 while creating azure app one thing is most important that is selecting Runtime stack ( frame work to run) this version must match with the version that present in program.cs file 
 
 then create it  and deploy it after deploying it it look like this
 
-pic-12
+![repo-look-img](z-images/image-13.png)
 
 Now let’s create CD pipe to deploy artifacts to this app service 
 
@@ -214,23 +214,20 @@ select pipeline > project > repo > here better to select starter pipeline
 
 this is the YMAL code for CD part ( which is very smiple for now but it can be complicated based on our requirements)
 
-Here we have only two tasks 
-1 downloads artifacts to running VM 
-2 push’s to derived environment
+Here we have only two tasks  
 
-trigger:   
+1 downloads artifacts to running VM  
+
+2 push’s to derived environment  
+
+trigger:  
 - none
-pool:
- vmImage: 'windows-latest'     ## VM where these tasks runs created by azure or service provider 
- 
-steps:
-- task: DownloadPipelineArtifact@2  # downlaods artifacts from CI publish location and it will download only latest one
- 
-- task: AzureRmWebAppDeployment@5   # this task will publish it to derived invironment in our case azure app service
- 
-
-finally after deploying you can see your web page live 
-
-This is the Link to the video of  project work flow 
-
+  pool:
+  vmImage: 'windows-latest'     ## VM where these tasks runs created by azure or service provider
+  
+  steps:
+  - task: DownloadPipelineArtifact@2  # downlaods artifacts from CI publish location and it will download only latest one
+  -  task: AzureRmWebAppDeployment@5   # this task will publish it to derived invironment in our case azure app service
+    finally after deploying you can see your web page live
+This is the Link to the video of  project work flow
 Link
