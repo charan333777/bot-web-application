@@ -218,7 +218,9 @@ Here we have only two tasks
 
 1 downloads artifacts to running VM  
 
-2 push’s to derived environment  
+2 push’s to derived environment    
+
+![repo-look-img](z-images/image-14.png)
 
 trigger:  
 - none
@@ -227,7 +229,11 @@ trigger:
   
   steps:
   - task: DownloadPipelineArtifact@2  # downlaods artifacts from CI publish location and it will download only latest one
+    
   -  task: AzureRmWebAppDeployment@5   # this task will publish it to derived invironment in our case azure app service
+  
     finally after deploying you can see your web page live
-This is the Link to the video of  project work flow
+  
+This is the Link to the video of  project work flow  
+
 Link
