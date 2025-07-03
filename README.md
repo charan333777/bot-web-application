@@ -1,7 +1,7 @@
 # Bot-web
 
 ## Objective of  The project :
-This project is mainly focused on  DevOps  Part  to create CICD pipe  for a dot net MVC framework application and make it live(Host) by using Azure cloud
+This project is mainly focused on  DevOps  Part  to create CICD pipeline  for a dot net MVC framework application and make it live(Host) by using Azure cloud
 
 ## About Project:
 ```
@@ -44,24 +44,24 @@ this folder contains static code , images which can be used by mostly in view se
 
  ### bot.sln:
 this is plays an important role in CI part where it contains all the connection between the projects Like databases, bussiness logic, and so on 
-but in our project we don’t need it because we are using only one project we can just use 
+but in our project we don’t need it because we are using only one project we can just use direct .csproj file
 
 ### appsettings.json :
  This file mainly contains the credentials of the environment ( where to deploy the application) it is very usefull when we are working with multi-environments
 
 ### botapp.csproj:
- In this project for CI part this is the single most important file to built artifact. It tell what to use like frame work , location of the files and there dependences and so on based on the project requirement 
-this file helps to built artifact in this case it helps MSbuilt to how Built artifacts
+ In this project for CI part this is the single most important file to built artifact. It tell what to use like frame work , location of the files and there dependences and so on based on the project requirement,
+This file helps to built artifact in this case it helps MSbuilt to how Built artifacts
 
 ### program.cs : 
-this file consist instructions how it the application work (it’s more like an engine)
+this file consist instructions how  the application work (it’s more like an engine)
 
  
 ### Startup.cs :
  this is same as program.cs file which is used to set the application and runs it. 
-  In this project we are using both using sartup.cs  and program.cs
+  In this project we are using both sartup.cs and program.cs
 
-This is a basic view of our project and how it works
+This is the basic view of our project and how it works
 
 ## Technologies Used
 - ASP.NET Core MVC
@@ -70,7 +70,7 @@ This is a basic view of our project and how it works
 - HTML/CSS/JavaScript
 
 ## Features
-- Home page with a simple greeting.
+- Home page with a simple greeting and about page.
 - Sample data model to demonstrate MVC functionality.
 - Responsive design with CSS styling.
 - JavaScript for enhanced user interaction.
@@ -115,7 +115,7 @@ Step3 : Creating CI pipe line
 
    click on create 
 
-follow this steps
+### follow this steps
 
 ![repo-look-img](z-images/image-3.png)
 
@@ -123,24 +123,24 @@ here click on azure repo Git because our code present it that repo
 
 ![repo-look-img](z-images/image-4.png)
 
-Select repository for our case we have bot repo when our project files are stored then select it
+Select repository, In our case we have bot repo where our project files are stored. Select it
 
 ![repo-look-img](z-images/image-5.png)
 
-Here you can select select any option from top three or if you are using my repo you can use last option then you can select it from repo 
-here I am selecting first option
+Here you can select any option from top three or if you are using my repo you can use last option then you can select it from repo YMAL CI code. 
+Here I am selecting first option
 
 ![repo-look-img](z-images/image-6.png)
 
-now you can see yaml file which is created automatically 
+Now you can see yaml file which is created automatically 
 
-not you don’t need to edit this at this time but you need to a one task at the end after built stage 
-that is publish 
+you don’t need to edit this at this time but you need to a one task at the end after built stage 
+that is publish task 
 for that u can you my code or 
 in the code editor goto task which present top right side  of the page 
 search for publish select (publish built artifacts)
-then no need to change anything just add it 
-then it run it 
+then no need to change anything just add it, It will storre the built artifacts in default publish location
+then run it 
 
 task adding process
 
@@ -148,7 +148,7 @@ task adding process
 
 ![repo-look-img](z-images/image-8.png)
 
-this would be out-put
+this would be output
 
 ![repo-look-img](z-images/image-9.png)
 
@@ -166,33 +166,30 @@ now I would like to explain in short YMAL file of CI. then we move on to creatin
 
 YMAL CI FILE
 
-trigger:    ## This is trigger it will monitor in this case main branch if any changes in that it will tigger this pipe-line
+trigger:           ## This is trigger it will monitor in this case main branch if any changes in that it will tigger this pipe-line  
 - main
-
-pool:
-  vmImage: 'windows-latest'      ## This is vm which is created by azure to run this process then it will be destoryed after compliction of all tasks
-  
-variables:
-  solution: '**/*.csproj'
-  buildPlatform: 'Any CPU'        ## these are local varible that can be used in this code
-  buildConfiguration: 'Release'
-
-steps:
-- task: NuGetToolInstaller@1       ## this task install the dependence of .net application
-
-
-- task: VSBuild@1                  ## this task built's artifact by using botapp.csproj file
-  
-
-- task: VSTest@2                 ## this will tast the application but in this case it won't do anything 
-
  
-- task: PublishBuildArtifacts@1   ## this task will publish artifact to publish location which is defaultrepository for storing artifacts
+pool:  
+vmImage: 'windows-latest'  --------    ## This is vm which is created by azure to run this process then it will be destoryed after compliction of all tasks  
+  
+variables:  ---------------------------  ## these are local varible that can be used in this code
+solution: '**/*.csproj'  
+buildPlatform: 'Any CPU'        
+buildConfiguration: 'Release'  
+
+steps:  
+- task: NuGetToolInstaller@1    ----------------------   ## this task install the dependence of .net application
+
+-  task: VSBuild@1              ----------------------    ## this task built's artifact by using botapp.csproj file
+    
+-  task: VSTest@2              ----------------------   ## this will tast the application but in this case it won't do anything
+   
+ -   task: PublishBuildArtifacts@1   --------------------  ## this task will publish artifact to publish location which is defaultrepository for storing artifacts
+     
 
 
-Step 4 : Creating hosting environment based on our requirement (in our case Azure app services)
-
-For that Goto
+Step 4 : Creating hosting environment based on our requirement (in our case Azure app services)  
+For that Goto  
 Azure cloud  > search for app service > click on Create (then you can see this page)
 
 ![repo-look-img](z-images/image-12.png)
@@ -203,14 +200,14 @@ then create it  and deploy it after deploying it it look like this
 
 ![repo-look-img](z-images/image-13.png)
 
-Now let’s create CD pipe to deploy artifacts to this app service 
+Now let’s create CD pipe to deploy artifacts to this app service   
 
-Step 5 : Creating CD pipe-line
+Step 5 : Creating CD pipe-line  
 
-to create CD we can you seme yaml file as well but it is butter to create separately for butter structure 
+to create CD we can you seme yaml file as well but it is butter to create separately for butter structure   
 
-follow same steps to create CD as well 
-select pipeline > project > repo > here better to select starter pipeline
+follow same steps to create CD as well   
+select pipeline > project > repo > here better to select starter pipeline  
 
 this is the YMAL code for CD part ( which is very smiple for now but it can be complicated based on our requirements)
 
@@ -222,17 +219,18 @@ Here we have only two tasks
 
 ![repo-look-img](z-images/image-14.png)
 
-trigger:  
+trigger:    
 - none
-  pool:
-  vmImage: 'windows-latest'     ## VM where these tasks runs created by azure or service provider
-  
-  steps:
-  - task: DownloadPipelineArtifact@2  # downlaods artifacts from CI publish location and it will download only latest one
-    
-  -  task: AzureRmWebAppDeployment@5   # this task will publish it to derived invironment in our case azure app service
-  
-    finally after deploying you can see your web page live
+ pool:
+vmImage: 'windows-latest'  ------------------   ## VM where these tasks runs created by azure or service provider
+
+steps:  
+
+- task: DownloadPipelineArtifact@2 ------------------------ # downlaods artifacts from CI publish location and it will download only latest one
+
+- task: AzureRmWebAppDeployment@5 -------------------------  # this task will publish it to derived invironment in our case azure app service
+
+- finally after deploying you can see your web page live
   
 This is the Link to the video of  project work flow  
 
