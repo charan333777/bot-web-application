@@ -189,8 +189,11 @@ steps:
 - task: VSBuild@1                  ## this task built's artifact by using botapp.csproj file
   inputs:
     solution: '$(solution)'
+  
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+
     platform: '$(buildPlatform)'
+
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2                 ## this will tast the application but in this case it won't do anything 
