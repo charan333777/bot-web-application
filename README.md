@@ -2,6 +2,7 @@
 ---
 # Demo video link of the project ------------- (https://drive.google.com/file/d/13YLY7zCiUT5tIk5xuJofqbaQeHCJHbSs/view)  Please ignore the voice 
 ## Objective of  The project :
+## Hosting a .NET application using Azure App Service, a serverless-style PaaS offering
 This project is mainly focused on  DevOps  Part  to create CICD pipeline  for a dot net MVC framework application and make it live(Host) by using Azure cloud
 
 ## About Project:
