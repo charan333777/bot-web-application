@@ -2,7 +2,7 @@
 
 This project demonstrates how to build, test, and deploy an ASP.NET Core MVC app to Azure App Service with Azure DevOps Pipelines. It’s purpose-built to showcase cloud engineering skills: CI/CD design, secure configuration, deployment slots, observability, and (optionally) containers & IaC.
 
-Live Demo: add your app URL once deployed  
+Live Demo: https://drive.google.com/file/d/13YLY7zCiUT5tIk5xuJofqbaQeHCJHbSs/view 
 
 Build Status: add your Azure Pipelines badge  
 
