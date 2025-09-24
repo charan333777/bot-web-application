@@ -1,239 +1,256 @@
-# Bot-web
----
-# Demo video link of the project ------------- (https://drive.google.com/file/d/13YLY7zCiUT5tIk5xuJofqbaQeHCJHbSs/view)  Please ignore the voice 
-## Objective of  The project :
-## Hosting a .NET application using Azure App Service, a serverless-style PaaS offering
-This project is mainly focused on  DevOps  Part  to create CICD pipeline  for a dot net MVC framework application and make it live(Host) by using Azure cloud
+ ### Bot Web Application — ASP.NET Core MVC on Azure (CI/CD with Azure Pipelines)
 
-## About Project:
-```
-This is a Dot net project which is developed by using [ASP.NET](http://ASP.NET) MVC   framework
+This project demonstrates how to build, test, and deploy an ASP.NET Core MVC app to Azure App Service with Azure DevOps Pipelines. It’s purpose-built to showcase cloud engineering skills: CI/CD design, secure configuration, deployment slots, observability, and (optionally) containers & IaC.
 
-This is the file structure of the project 
+Live Demo: add your app URL once deployed  
 
-MyMvcApp
-├── Controllers
-│   └── HomeController.cs
-├── Models
-│   └── SampleModel.cs
-├── Views
-│   ├── Home
-│   │   └── Index.cshtml
-│   └── Shared
-│       └── _Layout.cshtml
-├── wwwroot
-│   ├── css
-│   │   └── site.css
-│   └── js
-│       └── site.js
-├── appsettings.json
-|—- bot.sln
-|—- botapp.csproj
-├── Program.cs
-├── Startup.cs
-└── [README.md](http://readme.md/)
-```
+Build Status: add your Azure Pipelines badge  
 
-MVC framework is well know for it structured and clear way of presenting the project for that reason we are using it 
-where MVC is know as 
+Repo highlights: botapp.csproj, azure-pipelines.yml, azure-pipelines-1.yml are present. 
+| Area             | What’s implemented here                                         |
+| ---------------- | --------------------------------------------------------------- |
+| CI               | Azure Pipelines YAML: restore → build → test → publish artifact |
+| CD               | Deploy to App Service staging slot → swap to production         |
+| Config & Secrets | App Service Configuration (and Key Vault references if enabled) |
+| Observability    | Application Insights + `/healthz` endpoint                      |
+| Security         | HTTPS/HSTS, secret hygiene, least-privilege service connections |
+| Portability      | Optional Dockerfile + IaC path (Bicep/Terraform)                |
 
-M - Model         (is like database manages data and business logics)
-V - View             (it contains UI code for this project we have  HTML, C#)
-C - Controller  ( it act as a middle layer between model and view)
-
-### wwwroot : 
-this folder contains static code , images which can be used by mostly in view section 
-
- ### bot.sln:
-this is plays an important role in CI part where it contains all the connection between the projects Like databases, bussiness logic, and so on 
-but in our project we don’t need it because we are using only one project we can just use direct .csproj file
-
-### appsettings.json :
- This file mainly contains the credentials of the environment ( where to deploy the application) it is very usefull when we are working with multi-environments
-
-### botapp.csproj:
- In this project for CI part this is the single most important file to built artifact. It tell what to use like frame work , location of the files and there dependences and so on based on the project requirement,
-This file helps to built artifact in this case it helps MSbuilt to how Built artifacts
-
-### program.cs : 
-this file consist instructions how  the application work (it’s more like an engine)
-
+<pre>
+Developer → Git push (main)
+              │
+              ▼
+   Azure Pipelines (CI)
+Restore → Build → Test → Publish
+              │
+              ▼
+       Artifact: drop
+              │
+              ▼
+   Azure Pipelines (CD)
+ Download → Deploy (Staging)
+     Smoke test (/healthz)
+              │
+           Swap to Prod
+              └──► App Insights (logs/metrics/traces)
+</pre>
  
-### Startup.cs :
- this is same as program.cs file which is used to set the application and runs it. 
-  In this project we are using both sartup.cs and program.cs
+## Repository layout
 
-This is the basic view of our project and how it works
+<pre>
+.
+├── Controllers/   Models/   Views/   wwwroot/
+├── Program.cs    Startup.cs
+├── appsettings.json            # safe, non-secret defaults
+├── bot.sln      botapp.csproj  # project/solution files
+├── azure-pipelines.yml         # CI pipeline
+├── azure-pipelines-1.yml       # extra pipeline (can repurpose as CD)
+└── README.md
 
-## Technologies Used
-- ASP.NET Core MVC
-- C#
-- Razor Views
-- HTML/CSS/JavaScript
+</pre>
+Note: In this README I refer to a CD YAML named azure-pipelines-cd.yml. You can either rename azure-pipelines-1.yml to that and adjust, or keep your filename—functionally the same
 
-## Features
-- Home page with a simple greeting and about page.
-- Sample data model to demonstrate MVC functionality.
-- Responsive design with CSS styling.
-- JavaScript for enhanced user interaction.
+## Local development
 
+Prereqs  
 
-### For this project we are mostly using Microsoft azure services
+.NET SDK (match the TargetFramework in botapp.csproj)  
 
-Steps:
+Azure CLI (optional, for smoke tests/deploys)  
 
-Step1 : Create a project name bot in Azure devOps
+Node.js only if you add front-end tooling  
 
-![repo-look-img](z-images/image-1.png)
+Run  
 
-Step2 :  After creating it we need to push our local repo to azure repo’s
+<pre>
+ dotnet restore
+dotnet build -c Release
+dotnet run --project botapp.csproj
+# open the URL shown in console (e.g., http://localhost:5000)
 
-for this we are using git (it is a version controlling system) 
- 1st connect to remote repo by using 
+</pre>
 
-git remote add origin https://github.com/yourusername/your-repo.git command
+### Health check (recommended)  
+<pre>
+ // Program.cs
+builder.Services.AddHealthChecks();
+var app = builder.Build();
+app.MapHealthChecks("/healthz");
+app.Run();
 
-then use this git commands 
+</pre>
 
-git init 
+### Configuration & secrets
 
-git add .
+Do not commit secrets. Store production values in App Service → Configuration:  
 
-git commit -m “first commit”
+ASPNETCORE_ENVIRONMENT=Production  
 
-git status —> to check everything correct
+Any connection strings or API keys  
 
-git push 
+Optionally use Key Vault references in App Service Configuration.  
 
-after this your local repo would be push to remote repo and connection between local repo and remote repo will be established through git
+Keep appsettings.json safe; ignore appsettings.Development.json in   
+.gitignore.
+<pre>
+ bin/
+obj/
+.vs/
+*.user
+*.suo
+appsettings.Development.json
+*.secret.json
 
-it should look like this
+</pre>
 
-![repo-look-img](z-images/image-2.png)
+## Tests
 
-Step3 : Creating CI pipe line
+Add a tiny xUnit project so CI runs real tests:  
+<pre>
+ dotnet new xunit -n BotApp.Tests
+dotnet add BotApp.Tests/BotApp.Tests.csproj reference botapp.csproj
 
-   To create CI pipe line go to pipe-line option on left side of the screen (azure dev page)
+</pre> 
+Example:  
 
-   click on create 
+<pre>
+ using Xunit;
+public class SmokeTests { [Fact] public void True_is_true() => Assert.True(true); }
 
-### follow this steps
+</pre>  
 
-![repo-look-img](z-images/image-3.png)
+### CI pipeline (Azure DevOps)  
 
-here click on azure repo Git because our code present it that repo
+File: azure-pipelines.yml (you already have this file) 
+GitHub  
 
-![repo-look-img](z-images/image-4.png)
+Purpose: restore → build → test → publish artifact  
 
-Select repository, In our case we have bot repo where our project files are stored. Select it
+<pre>
+ trigger:
+  - main
 
-![repo-look-img](z-images/image-5.png)
+pool:
+  vmImage: 'ubuntu-latest'
 
-Here you can select any option from top three or if you are using my repo you can use last option then you can select it from repo YMAL CI code. 
-Here I am selecting first option
+variables:
+  buildConfiguration: 'Release'
+  project: 'botapp.csproj'
+  publishDir: '$(Build.ArtifactStagingDirectory)/publish'
 
-![repo-look-img](z-images/image-6.png)
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'  # match TargetFramework in botapp.csproj
 
-Now you can see yaml file which is created automatically 
+- script: dotnet restore $(project)
+  displayName: Restore
 
-you don’t need to edit this at this time but you need to a one task at the end after built stage 
-that is publish task 
-for that u can you my code or 
-in the code editor goto task which present top right side  of the page 
-search for publish select (publish built artifacts)
-then no need to change anything just add it, It will storre the built artifacts in default publish location
-then run it 
+- script: dotnet build $(project) -c $(buildConfiguration) --no-restore
+  displayName: Build
 
-task adding process
+- script: dotnet test **/*Tests/*.csproj -c $(buildConfiguration) --no-build --logger trx
+  displayName: Test
 
-![repo-look-img](z-images/image-7.png)
+- script: dotnet publish $(project) -c $(buildConfiguration) -o $(publishDir) --no-build
+  displayName: Publish
 
-![repo-look-img](z-images/image-8.png)
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(publishDir)'
+    ArtifactName: 'drop'
 
-this would be output
+</pre>  
 
-![repo-look-img](z-images/image-9.png)
+### CD pipeline (Azure DevOps → Azure App Service)  
 
-then run it 
+File (suggested): azure-pipelines-cd.yml  
 
-after running successfully you can see artifact(file) present in publishes section that is the built artifact
+If you prefer, rename your existing azure-pipelines-1.yml to this and update its content.
+<pre>
+ trigger: none
 
-![repo-look-img](z-images/image-10.png)
+pool:
+  vmImage: 'ubuntu-latest'
 
-these are the files present in it 
+variables:
+  WebAppName: '<YOUR-APP-SERVICE-NAME>'
+  ResourceGroup: '<YOUR-RG>'
+  SlotName: 'staging'
+  ArtifactName: 'drop'
 
-![repo-look-img](z-images/image-11.png)
+steps:
+- download: current
+  artifact: $(ArtifactName)
 
-now I would like to explain in short YMAL file of CI. then we move on to creating hosting server
+- task: AzureWebApp@1
+  displayName: 'Deploy to Staging Slot'
+  inputs:
+    azureSubscription: '<YOUR-SERVICE-CONNECTION>'
+    appType: 'webApp'
+    appName: '$(WebAppName)'
+    slotName: '$(SlotName)'
+    package: '$(Pipeline.Workspace)/$(ArtifactName)/**/*.zip'
 
-YMAL CI FILE
+- task: AzureAppServiceManage@0
+  displayName: 'Swap Staging → Production'
+  inputs:
+    azureSubscription: '<YOUR-SERVICE-CONNECTION>'
+    Action: 'Swap Slots'
+    WebAppName: '$(WebAppName)'
+    ResourceGroupName: '$(ResourceGroup)'
+    SourceSlot: '$(SlotName)'
+    PreserveVnet: true
 
-trigger:           ## This is trigger it will monitor in this case main branch if any changes in that it will tigger this pipe-line  
-- main
- 
-pool:  
-vmImage: 'windows-latest'  --------    ## This is vm which is created by azure to run this process then it will be destoryed after compliction of all tasks  
-  
-variables:  ---------------------------  ## these are local varible that can be used in this code
-solution: '**/*.csproj'  
-buildPlatform: 'Any CPU'        
-buildConfiguration: 'Release'  
+</pre>
 
-steps:  
-- task: NuGetToolInstaller@1    ----------------------   ## this task install the dependence of .net application
+Service Connection: Project Settings → Service connections → Azure Resource Manager (scope it minimally).  
 
--  task: VSBuild@1              ----------------------    ## this task built's artifact by using botapp.csproj file
-    
--  task: VSTest@2              ----------------------   ## this will tast the application but in this case it won't do anything
-   
- -   task: PublishBuildArtifacts@1   --------------------  ## this task will publish artifact to publish location which is defaultrepository for storing artifacts
-     
+### Observability
 
+Application Insights: enable it and set APPLICATIONINSIGHTS_CONNECTION_STRING in App Service → Configuration.  
 
-Step 4 : Creating hosting environment based on our requirement (in our case Azure app services)  
-For that Goto  
-Azure cloud  > search for app service > click on Create (then you can see this page)
+Log Stream: check startup/runtime logs directly from the App Service.  
 
-![repo-look-img](z-images/image-12.png)
+Health checks: point App Service Health check to /healthz for automatic restarts and better availability.  
 
-while creating azure app one thing is most important that is selecting Runtime stack ( frame work to run) this version must match with the version that present in program.cs file 
+### Security quick wins
 
-then create it  and deploy it after deploying it it look like this
+Enforce HTTPS only and add HSTS in Production.  
 
-![repo-look-img](z-images/image-13.png)
+Keep secrets in App Service/Key Vault, never in git.  
 
-Now let’s create CD pipe to deploy artifacts to this app service   
+Use least-privilege service connections in Azure DevOps.  
 
-Step 5 : Creating CD pipe-line  
+Add branch policies + required CI for main.  
 
-to create CD we can you seme yaml file as well but it is butter to create separately for butter structure   
+### Troubleshooting (fast)  
 
-follow same steps to create CD as well   
-select pipeline > project > repo > here better to select starter pipeline  
+## 502 Bad Gateway (App Service)  
 
-this is the YMAL code for CD part ( which is very smiple for now but it can be complicated based on our requirements)
+App not listening on expected port → set ASPNETCORE_URLS accordingly (80 for classic App Service; 8080 in container example).  
 
-Here we have only two tasks  
+Framework mismatch → ensure App Service runtime matches your TargetFramework.  
 
-1 downloads artifacts to running VM  
+Startup crash → check Log Stream and App Insights exceptions.  
 
-2 push’s to derived environment    
+Missing env vars → add them in App Service Configuration.  
 
-![repo-look-img](z-images/image-14.png)
+Artifacts vs Blob confusion  
 
-trigger:    
-- none
- pool:
-vmImage: 'windows-latest'  ------------------   ## VM where these tasks runs created by azure or service provider
+PublishBuildArtifacts@1 creates a pipeline artifact named drop (not a Blob container).  
 
-steps:  
+Point the CD task’s package to the pipeline artifact path.  
 
-- task: DownloadPipelineArtifact@2 ------------------------ # downlaods artifacts from CI publish location and it will download only latest one
+If you intentionally push to Blob Storage, ensure the container exists and your copy step targets the correct name.  
 
-- task: AzureRmWebAppDeployment@5 -------------------------  # this task will publish it to derived invironment in our case azure app service
+Health probe fails  
 
-- finally after deploying you can see your web page live
-  
-This is the Link to the video of  project work flow  
+Confirm /healthz is mapped.  
 
-Link
+Make sure staging & production slots have the same config keys.  
+
+### License
+
+MIT — see LICENSE.
